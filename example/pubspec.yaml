@@ -1,0 +1,12 @@
+name: customized_country_phone_picker_example
+description: Example app for customized_country_phone_picker
+publish_to: none
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  customized_country_phone_picker:
+    path: ../
