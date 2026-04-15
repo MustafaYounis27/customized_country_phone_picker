@@ -149,13 +149,15 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildCountryBox(colorScheme, textTheme),
-            SizedBox(width: _fieldDeco.gapWithCountryBox),
-            Expanded(child: _buildPhoneField(colorScheme, textTheme)),
-          ],
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildCountryBox(colorScheme, textTheme),
+              SizedBox(width: _fieldDeco.gapWithCountryBox),
+              Expanded(child: _buildPhoneField(colorScheme, textTheme)),
+            ],
+          ),
         ),
         if (widget.errorText != null) ...[
           const SizedBox(height: 4),
@@ -185,19 +187,21 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
           borderRadius: BorderRadius.circular(radius),
           border: borderColor != null && borderWidth != null ? Border.all(color: borderColor, width: borderWidth) : null,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (deco.showFlag) ...[Text(_selectedCountry.flag, style: TextStyle(fontSize: deco.flagSize)), SizedBox(width: deco.spacing)],
-            if (_dialCodeDisplay == DialCodeDisplay.inBox) ...[
-              Text(
-                _selectedCountry.dialCode,
-                style: deco.dialCodeStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface) ?? const TextStyle(fontSize: 14),
-              ),
-              SizedBox(width: deco.spacing),
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (deco.showFlag) ...[Text(_selectedCountry.flag, style: TextStyle(fontSize: deco.flagSize)), SizedBox(width: deco.spacing)],
+              if (_dialCodeDisplay == DialCodeDisplay.inBox) ...[
+                Text(
+                  _selectedCountry.dialCode,
+                  style: deco.dialCodeStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface) ?? const TextStyle(fontSize: 14),
+                ),
+                SizedBox(width: deco.spacing),
+              ],
+              if (deco.showArrow) Icon(deco.arrowIcon, size: deco.arrowSize, color: arrowColor),
             ],
-            if (deco.showArrow) Icon(deco.arrowIcon, size: deco.arrowSize, color: arrowColor),
-          ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Fixed country box and phone field height mismatch when displayed side by side
+
 ## 0.1.0
 
 - Initial release
