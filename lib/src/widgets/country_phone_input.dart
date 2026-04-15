@@ -195,7 +195,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
               if (_dialCodeDisplay == DialCodeDisplay.inBox) ...[
                 Text(
                   _selectedCountry.dialCode,
-                  style: deco.dialCodeStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface) ?? const TextStyle(fontSize: 14),
+                  style:
+                      deco.dialCodeStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface) ?? const TextStyle(fontSize: 14),
                 ),
                 SizedBox(width: deco.spacing),
               ],
