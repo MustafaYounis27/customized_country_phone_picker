@@ -1,3 +1,10 @@
+## 0.3.0
+
+- Added `CountryPickerSearchDecoration` for granular styling of the picker search field (borders, fill, padding, hint, cursor, outlined/filled presets).
+- Extended `CountryPhonePickerThemeData` with `searchFieldDecoration` and `copyWith`. `CountryPhoneInput.searchFieldDecoration` overrides the theme value for the picker only.
+- Search field: optional custom `prefix` and `suffix` widgets; default clear control when the field is not empty (`showClearButton`, `clearIcon`, `clearIconColor`, `clearButton`, `clearButtonTooltip`).
+- Picker search uses a `FocusNode` so focused border colors apply when using `CountryPickerSearchDecoration` (full `InputDecoration` via `sheetSearchDecoration` still overrides the built-in search layout).
+
 ## 0.2.0
 
 - Fixed modal country picker so tapping the scrim dismisses the sheet (`DraggableScrollableSheet` no longer expands over the full screen).

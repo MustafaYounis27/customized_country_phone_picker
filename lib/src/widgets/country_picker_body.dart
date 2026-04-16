@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/country_model.dart';
 import '../notifiers/country_picker_notifier.dart';
 import '../theme/country_phone_picker_theme.dart';
+import '../theme/country_picker_search_decoration.dart';
 import 'country_list_tile.dart';
 
 /// Search field + scrollable country list shared by the bottom sheet and dialog.
@@ -32,17 +33,46 @@ class CountryPickerBody extends StatefulWidget {
 
 class _CountryPickerBodyState extends State<CountryPickerBody> {
   late final CountryPickerNotifier _notifier;
+  late final FocusNode _searchFocus;
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
     _notifier = CountryPickerNotifier(countries: widget.countries, priorityCodes: widget.priorityCountryCodes);
+    _searchFocus = FocusNode();
+    _searchController = TextEditingController();
+    _searchController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
+    _searchFocus.dispose();
     _notifier.dispose();
     super.dispose();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    _notifier.search('');
+  }
+
+  Widget? _buildSuffixIcon(CountryPickerSearchDecoration deco) {
+    final trailing = <Widget>[];
+    if (deco.suffix != null) trailing.add(deco.suffix!);
+    if (deco.showClearButton && _searchController.text.isNotEmpty) {
+      trailing.add(
+        IconButton(
+          tooltip: deco.clearButtonTooltip ?? 'Clear',
+          onPressed: _clearSearch,
+          icon: deco.clearButton ?? Icon(deco.clearIcon, color: deco.clearIconColor ?? Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      );
+    }
+    if (trailing.isEmpty) return null;
+    if (trailing.length == 1) return trailing.single;
+    return Row(mainAxisSize: MainAxisSize.min, children: trailing);
   }
 
   @override
@@ -56,39 +86,49 @@ class _CountryPickerBodyState extends State<CountryPickerBody> {
     final searchHint = t?.sheetSearchHint ?? 'Search';
     final dividerColor = t?.sheetDividerColor ?? colorScheme.outlineVariant;
 
+    final sheetSearchOverride = t?.sheetSearchDecoration;
+    final searchField =
+        sheetSearchOverride != null
+            ? TextField(
+              focusNode: _searchFocus,
+              controller: _searchController,
+              onChanged: _notifier.search,
+              decoration: sheetSearchOverride.copyWith(hintText: sheetSearchOverride.hintText ?? searchHint),
+              style: searchStyle,
+            )
+            : ListenableBuilder(
+              listenable: _searchFocus,
+              builder: (context, _) {
+                final deco = t?.searchFieldDecoration ?? const CountryPickerSearchDecoration();
+                return TextField(
+                  focusNode: _searchFocus,
+                  controller: _searchController,
+                  onChanged: _notifier.search,
+                  decoration: deco.buildDecoration(
+                    context: context,
+                    hintText: searchHint,
+                    hasFocus: _searchFocus.hasFocus,
+                    prefixIcon: deco.buildPrefix(context),
+                    suffixIcon: _buildSuffixIcon(deco),
+                  ),
+                  style: searchStyle,
+                  cursorColor: deco.cursorColor,
+                  cursorWidth: deco.cursorWidth,
+                );
+              },
+            );
+
     return Column(
       children: [
         if (widget.showDragHandle) ...[
           const SizedBox(height: 12),
           Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(color: handleColor, borderRadius: BorderRadius.circular(2)),
-            ),
+            child: Container(width: 36, height: 4, decoration: BoxDecoration(color: handleColor, borderRadius: BorderRadius.circular(2))),
           ),
           const SizedBox(height: 12),
         ] else
           const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
-          child: TextField(
-            onChanged: _notifier.search,
-            decoration:
-                t?.sheetSearchDecoration ??
-                InputDecoration(
-                  hintText: searchHint,
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: colorScheme.outline)),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: colorScheme.outline),
-                  ),
-                  contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12),
-                ),
-            style: searchStyle,
-          ),
-        ),
+        Padding(padding: const EdgeInsetsDirectional.symmetric(horizontal: 16), child: searchField),
         const SizedBox(height: 8),
         Expanded(
           child: ValueListenableBuilder<CountryPickerState>(

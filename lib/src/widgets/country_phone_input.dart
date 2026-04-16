@@ -5,6 +5,7 @@ import '../data/countries_data.dart';
 import '../models/country_model.dart';
 import '../theme/country_box_decoration.dart';
 import '../theme/country_phone_picker_theme.dart';
+import '../theme/country_picker_search_decoration.dart';
 import '../theme/country_picker_presentation.dart';
 import '../theme/dial_code_display.dart';
 import '../theme/phone_field_decoration.dart';
@@ -44,6 +45,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.countries,
     this.priorityCountryCodes,
     this.countryPickerPresentation = CountryPickerPresentation.bottomSheet,
+    this.searchFieldDecoration,
   });
 
   /// Controller for the phone number text field.
@@ -95,6 +97,11 @@ class CountryPhoneInput extends StatefulWidget {
   /// Whether the country list opens in a bottom sheet or a dialog.
   final CountryPickerPresentation countryPickerPresentation;
 
+  /// Styling for the picker search field. Overrides [theme]'s [CountryPhonePickerThemeData.searchFieldDecoration].
+  ///
+  /// Ignored when [CountryPhonePickerThemeData.sheetSearchDecoration] is set on the effective theme.
+  final CountryPickerSearchDecoration? searchFieldDecoration;
+
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -131,6 +138,12 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
   PhoneFieldDecoration get _fieldDeco =>
       widget.phoneFieldDecoration ?? widget.theme?.phoneFieldDecoration ?? const PhoneFieldDecoration.bordered();
 
+  CountryPhonePickerThemeData? get _pickerTheme {
+    if (widget.searchFieldDecoration == null) return widget.theme;
+    final base = widget.theme ?? const CountryPhonePickerThemeData();
+    return base.copyWith(searchFieldDecoration: widget.searchFieldDecoration);
+  }
+
   Future<CountryModel?> _presentCountryPicker() {
     if (widget.countryPickerPresentation == CountryPickerPresentation.dialog) {
       return CountryPickerDialog.show(
@@ -139,7 +152,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
         locale: widget.locale,
         countries: widget.countries,
         priorityCountryCodes: widget.priorityCountryCodes,
-        theme: widget.theme,
+        theme: _pickerTheme,
       );
     }
     return CountryPickerBottomSheet.show(
@@ -148,7 +161,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       locale: widget.locale,
       countries: widget.countries,
       priorityCountryCodes: widget.priorityCountryCodes,
-      theme: widget.theme,
+      theme: _pickerTheme,
     );
   }
 

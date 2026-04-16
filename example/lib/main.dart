@@ -57,6 +57,16 @@ class _ExampleScreenState extends State<ExampleScreen> {
           CountryPhoneInput(
             controller: _ctrlDialog,
             countryPickerPresentation: CountryPickerPresentation.dialog,
+            theme: const CountryPhonePickerThemeData(
+              sheetSearchHint: 'Search country',
+              searchFieldDecoration: CountryPickerSearchDecoration(
+                borderRadius: 20,
+                borderColor: Colors.deepOrange,
+                focusedBorderColor: Colors.red,
+                fillColor: Color(0xFFFFEBEE),
+                prefixIcon: Icons.public,
+              ),
+            ),
             onCountryChanged: (c) {},
           ),
           const SizedBox(height: 32),

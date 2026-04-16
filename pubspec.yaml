@@ -1,6 +1,6 @@
 name: customized_country_phone_picker
-description: A fully customizable Flutter phone input field with country picker (bottom sheet or dialog), bilingual country names (EN/AR), phone validation, and three dial code display modes.
-version: 0.2.0
+description: A fully customizable Flutter phone input field with country picker (bottom sheet or dialog), bilingual country names (EN/AR), phone validation, three dial code display modes, and a configurable country search field.
+version: 0.3.0
 homepage: https://github.com/MustafaYounis27/customized_country_phone_picker
 repository: https://github.com/MustafaYounis27/customized_country_phone_picker
 issue_tracker: https://github.com/MustafaYounis27/customized_country_phone_picker/issues
