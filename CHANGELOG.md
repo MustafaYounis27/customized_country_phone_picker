@@ -1,3 +1,7 @@
+## 0.3.2
+
+- Updated `LICENSE` copyright to Mustafa Younis.
+
 ## 0.3.1
 
 - Shortened `pubspec.yaml` `description` to meet pub.dev length rules (60–180 characters).
