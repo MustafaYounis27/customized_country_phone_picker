@@ -1,3 +1,8 @@
+## 0.3.1
+
+- Shortened `pubspec.yaml` `description` to meet pub.dev length rules (60–180 characters).
+- README: installation version, feature list, and examples aligned with dialog picker, search field theming, and `CountryPickerSearchDecoration`.
+
 ## 0.3.0
 
 - Added `CountryPickerSearchDecoration` for granular styling of the picker search field (borders, fill, padding, hint, cursor, outlined/filled presets).

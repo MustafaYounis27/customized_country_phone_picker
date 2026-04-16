@@ -1,6 +1,6 @@
-/// A fully customizable Flutter phone input field with country picker,
-/// bilingual country names (English & Arabic), phone number validation,
-/// and three dial code display modes.
+/// Customizable Flutter phone input with country picker (bottom sheet or dialog),
+/// bilingual names (English & Arabic), validation, dial-code display modes,
+/// and themed picker search via [CountryPickerSearchDecoration].
 ///
 /// ## Quick Start
 ///
