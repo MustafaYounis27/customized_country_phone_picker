@@ -5,15 +5,17 @@ import '../data/countries_data.dart';
 import '../models/country_model.dart';
 import '../theme/country_box_decoration.dart';
 import '../theme/country_phone_picker_theme.dart';
+import '../theme/country_picker_presentation.dart';
 import '../theme/dial_code_display.dart';
 import '../theme/phone_field_decoration.dart';
 import 'country_picker_bottom_sheet.dart';
+import 'country_picker_dialog.dart';
 
 /// A phone number input field with an integrated country picker.
 ///
 /// Displays a tappable country box (flag + optional dial code) alongside a
-/// phone number text field. Tapping the country box opens a
-/// [CountryPickerBottomSheet] for country selection.
+/// phone number text field. Tapping the country box opens a country picker
+/// as a bottom sheet or dialog ([CountryPickerPresentation]).
 ///
 /// {@tool snippet}
 /// ```dart
@@ -41,6 +43,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.theme,
     this.countries,
     this.priorityCountryCodes,
+    this.countryPickerPresentation = CountryPickerPresentation.bottomSheet,
   });
 
   /// Controller for the phone number text field.
@@ -89,6 +92,9 @@ class CountryPhoneInput extends StatefulWidget {
   /// ISO codes for countries shown at the top of the picker list.
   final List<String>? priorityCountryCodes;
 
+  /// Whether the country list opens in a bottom sheet or a dialog.
+  final CountryPickerPresentation countryPickerPresentation;
+
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -125,8 +131,18 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
   PhoneFieldDecoration get _fieldDeco =>
       widget.phoneFieldDecoration ?? widget.theme?.phoneFieldDecoration ?? const PhoneFieldDecoration.bordered();
 
-  Future<void> _openPicker() async {
-    final country = await CountryPickerBottomSheet.show(
+  Future<CountryModel?> _presentCountryPicker() {
+    if (widget.countryPickerPresentation == CountryPickerPresentation.dialog) {
+      return CountryPickerDialog.show(
+        context,
+        selectedIsoCode: _selectedCountry.isoCode,
+        locale: widget.locale,
+        countries: widget.countries,
+        priorityCountryCodes: widget.priorityCountryCodes,
+        theme: widget.theme,
+      );
+    }
+    return CountryPickerBottomSheet.show(
       context,
       selectedIsoCode: _selectedCountry.isoCode,
       locale: widget.locale,
@@ -134,6 +150,11 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       priorityCountryCodes: widget.priorityCountryCodes,
       theme: widget.theme,
     );
+  }
+
+  Future<void> _openPicker() async {
+    if (!mounted) return;
+    final country = await _presentCountryPicker();
     if (country != null && mounted) {
       setState(() => _selectedCountry = country);
       widget.onCountryChanged(country);

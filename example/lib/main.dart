@@ -27,6 +27,7 @@ class _ExampleScreenState extends State<ExampleScreen> {
   final _ctrl1 = TextEditingController();
   final _ctrl2 = TextEditingController();
   final _ctrl3 = TextEditingController();
+  final _ctrlDialog = TextEditingController();
   String _selectedDial = '+20';
 
   @override
@@ -34,6 +35,7 @@ class _ExampleScreenState extends State<ExampleScreen> {
     _ctrl1.dispose();
     _ctrl2.dispose();
     _ctrl3.dispose();
+    _ctrlDialog.dispose();
     super.dispose();
   }
 
@@ -49,6 +51,14 @@ class _ExampleScreenState extends State<ExampleScreen> {
           CountryPhoneInput(controller: _ctrl1, onCountryChanged: (c) => setState(() => _selectedDial = c.dialCode)),
           const SizedBox(height: 8),
           Text('Selected: $_selectedDial', style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 32),
+          Text('Dialog picker', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          CountryPhoneInput(
+            controller: _ctrlDialog,
+            countryPickerPresentation: CountryPickerPresentation.dialog,
+            onCountryChanged: (c) {},
+          ),
           const SizedBox(height: 32),
           Text('Dial code in box + outlined', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),

@@ -22,5 +22,7 @@ export 'src/theme/dial_code_display.dart';
 export 'src/theme/country_box_decoration.dart';
 export 'src/theme/phone_field_decoration.dart';
 export 'src/theme/country_phone_picker_theme.dart';
+export 'src/theme/country_picker_presentation.dart';
 export 'src/widgets/country_phone_input.dart';
 export 'src/widgets/country_picker_bottom_sheet.dart';
+export 'src/widgets/country_picker_dialog.dart';
