@@ -1,104 +1,129 @@
+// example/lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:customized_country_phone_picker/customized_country_phone_picker.dart';
+import 'theme/app_theme.dart';
 
 void main() => runApp(const ExampleApp());
 
-class ExampleApp extends StatelessWidget {
+class ExampleApp extends StatefulWidget {
   const ExampleApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Country Phone Picker Example',
-      theme: ThemeData(colorSchemeSeed: Colors.red, useMaterial3: true),
-      home: const ExampleScreen(),
-    );
-  }
+  State<ExampleApp> createState() => _ExampleAppState();
 }
 
-class ExampleScreen extends StatefulWidget {
-  const ExampleScreen({super.key});
-
-  @override
-  State<ExampleScreen> createState() => _ExampleScreenState();
-}
-
-class _ExampleScreenState extends State<ExampleScreen> {
-  final _ctrl1 = TextEditingController();
-  final _ctrl2 = TextEditingController();
-  final _ctrl3 = TextEditingController();
-  final _ctrlDialog = TextEditingController();
-  String _selectedDial = '+20';
+class _ExampleAppState extends State<ExampleApp> {
+  final ValueNotifier<ThemeMode> _themeMode = ValueNotifier(ThemeMode.light);
 
   @override
   void dispose() {
-    _ctrl1.dispose();
-    _ctrl2.dispose();
-    _ctrl3.dispose();
-    _ctrlDialog.dispose();
+    _themeMode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeMode,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          title: 'Country Phone Picker',
+          debugShowCheckedModeBanner: false,
+          themeMode: mode,
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          home: RootScaffold(themeMode: _themeMode),
+        );
+      },
+    );
+  }
+}
+
+class RootScaffold extends StatefulWidget {
+  const RootScaffold({super.key, required this.themeMode});
+
+  final ValueNotifier<ThemeMode> themeMode;
+
+  @override
+  State<RootScaffold> createState() => _RootScaffoldState();
+}
+
+class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMixin {
+  late final TabController _tabController;
+
+  static const _tabs = <String>[
+    'Hero',
+    'Dial Modes',
+    'Country Box',
+    'Phone Field',
+    'Picker',
+    'Themed Search',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Country Phone Picker')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text('Default (inField)', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          CountryPhoneInput(controller: _ctrl1, onCountryChanged: (c) => setState(() => _selectedDial = c.dialCode)),
-          const SizedBox(height: 8),
-          Text('Selected: $_selectedDial', style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 32),
-          Text('Dialog picker', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          CountryPhoneInput(
-            controller: _ctrlDialog,
-            countryPickerPresentation: CountryPickerPresentation.dialog,
-            theme: const CountryPhonePickerThemeData(
-              sheetSearchHint: 'Search country',
-              searchFieldDecoration: CountryPickerSearchDecoration(
-                borderRadius: 20,
-                borderColor: Colors.deepOrange,
-                focusedBorderColor: Colors.red,
-                fillColor: Color(0xFFFFEBEE),
-                prefixIcon: Icons.public,
-              ),
-            ),
-            onCountryChanged: (c) {},
+      appBar: AppBar(
+        title: const Text('Country Phone Picker'),
+        actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: widget.themeMode,
+            builder: (context, mode, _) {
+              final isDark = mode == ThemeMode.dark;
+              return IconButton(
+                tooltip: isDark ? 'Switch to light' : 'Switch to dark',
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                onPressed: () {
+                  widget.themeMode.value = isDark ? ThemeMode.light : ThemeMode.dark;
+                },
+              );
+            },
           ),
-          const SizedBox(height: 32),
-          Text('Dial code in box + outlined', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          CountryPhoneInput(
-            controller: _ctrl2,
-            countryBoxDecoration: CountryBoxDecoration.pill(backgroundColor: Colors.grey),
-            phoneFieldDecoration: const PhoneFieldDecoration.bordered(
-              borderColor: Colors.red,
-              focusBorderColor: Colors.blue,
-              errorBorderColor: Colors.green,
-              borderWidth: 2,
-              borderRadius: 10,
-              backgroundColor: Colors.yellow,
-              textStyle: TextStyle(color: Colors.red),
-              hintStyle: TextStyle(color: Colors.blue),
-            ),
-            onCountryChanged: (c) {},
-          ),
-          const SizedBox(height: 32),
-          Text('Hidden dial code + filled field + flat box', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          CountryPhoneInput(
-            controller: _ctrl3,
-            dialCodeDisplay: DialCodeDisplay.hidden,
-            countryBoxDecoration: const CountryBoxDecoration.flat(),
-            phoneFieldDecoration: const PhoneFieldDecoration.filled(),
-            onCountryChanged: (c) {},
-          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: colorScheme.primary,
+          indicatorWeight: 3,
+          labelColor: colorScheme.primary,
+          unselectedLabelColor: colorScheme.onSurfaceVariant,
+          tabs: [for (final t in _tabs) Tab(text: t)],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          _PlaceholderScreen(name: 'Hero'),
+          _PlaceholderScreen(name: 'Dial Modes'),
+          _PlaceholderScreen(name: 'Country Box'),
+          _PlaceholderScreen(name: 'Phone Field'),
+          _PlaceholderScreen(name: 'Picker'),
+          _PlaceholderScreen(name: 'Themed Search'),
         ],
       ),
     );
+  }
+}
+
+class _PlaceholderScreen extends StatelessWidget {
+  const _PlaceholderScreen({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('$name screen'));
   }
 }
