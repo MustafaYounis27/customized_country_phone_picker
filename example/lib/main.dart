@@ -4,6 +4,7 @@ import 'theme/app_theme.dart';
 import 'screens/hero_signup_screen.dart';
 import 'screens/dial_code_modes_screen.dart';
 import 'screens/country_box_presets_screen.dart';
+import 'screens/phone_field_presets_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -112,7 +113,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
           HeroSignupScreen(),
           DialCodeModesScreen(),
           CountryBoxPresetsScreen(),
-          _PlaceholderScreen(name: 'Phone Field'),
+          PhoneFieldPresetsScreen(),
           _PlaceholderScreen(name: 'Picker'),
           _PlaceholderScreen(name: 'Themed Search'),
         ],
