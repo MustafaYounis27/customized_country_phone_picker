@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'screens/hero_signup_screen.dart';
+import 'screens/dial_code_modes_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -108,7 +109,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
         controller: _tabController,
         children: const [
           HeroSignupScreen(),
-          _PlaceholderScreen(name: 'Dial Modes'),
+          DialCodeModesScreen(),
           _PlaceholderScreen(name: 'Country Box'),
           _PlaceholderScreen(name: 'Phone Field'),
           _PlaceholderScreen(name: 'Picker'),
