@@ -1,6 +1,7 @@
 // example/lib/main.dart
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
+import 'screens/hero_signup_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -106,7 +107,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
       body: TabBarView(
         controller: _tabController,
         children: const [
-          _PlaceholderScreen(name: 'Hero'),
+          HeroSignupScreen(),
           _PlaceholderScreen(name: 'Dial Modes'),
           _PlaceholderScreen(name: 'Country Box'),
           _PlaceholderScreen(name: 'Phone Field'),
