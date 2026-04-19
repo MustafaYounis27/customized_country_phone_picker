@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'screens/hero_signup_screen.dart';
 import 'screens/dial_code_modes_screen.dart';
+import 'screens/country_box_presets_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -110,7 +111,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
         children: const [
           HeroSignupScreen(),
           DialCodeModesScreen(),
-          _PlaceholderScreen(name: 'Country Box'),
+          CountryBoxPresetsScreen(),
           _PlaceholderScreen(name: 'Phone Field'),
           _PlaceholderScreen(name: 'Picker'),
           _PlaceholderScreen(name: 'Themed Search'),
