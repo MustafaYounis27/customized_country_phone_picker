@@ -6,6 +6,7 @@ import 'screens/dial_code_modes_screen.dart';
 import 'screens/country_box_presets_screen.dart';
 import 'screens/phone_field_presets_screen.dart';
 import 'screens/picker_presentation_screen.dart';
+import 'screens/themed_search_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -116,19 +117,9 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
           CountryBoxPresetsScreen(),
           PhoneFieldPresetsScreen(),
           PickerPresentationScreen(),
-          _PlaceholderScreen(name: 'Themed Search'),
+          const ThemedSearchScreen(),
         ],
       ),
     );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({required this.name});
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('$name screen'));
   }
 }
