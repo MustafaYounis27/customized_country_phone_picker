@@ -1,3 +1,7 @@
+## 0.4.0
+
+- **Breaking:** `CountryPhoneInput` now clears the phone number text when the user picks a different country. Opt out with `clearTextOnCountryChange: false` to keep the previous behavior. Re-selecting the same country is a no-op.
+
 ## 0.3.3
 
 - Rebuilt the `example/` app into a six-screen demo (hero signup, dial code modes, country box presets, phone field presets, picker presentation, themed search) with a brand-matched light/dark theme and an AppBar toggle.
