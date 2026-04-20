@@ -117,7 +117,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
           CountryBoxPresetsScreen(),
           PhoneFieldPresetsScreen(),
           PickerPresentationScreen(),
-          const ThemedSearchScreen(),
+          ThemedSearchScreen(),
         ],
       ),
     );
