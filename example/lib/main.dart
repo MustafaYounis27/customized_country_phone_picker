@@ -56,14 +56,7 @@ class RootScaffold extends StatefulWidget {
 class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMixin {
   late final TabController _tabController;
 
-  static const _tabs = <String>[
-    'Hero',
-    'Dial Modes',
-    'Country Box',
-    'Phone Field',
-    'Picker',
-    'Themed Search',
-  ];
+  static const _tabs = <String>['Hero', 'Dial Modes', 'Country Box', 'Phone Field', 'Picker', 'Themed Search'];
 
   @override
   void initState() {
