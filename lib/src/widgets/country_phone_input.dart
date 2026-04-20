@@ -46,6 +46,7 @@ class CountryPhoneInput extends StatefulWidget {
     this.priorityCountryCodes,
     this.countryPickerPresentation = CountryPickerPresentation.bottomSheet,
     this.searchFieldDecoration,
+    this.clearTextOnCountryChange = true,
   });
 
   /// Controller for the phone number text field.
@@ -101,6 +102,11 @@ class CountryPhoneInput extends StatefulWidget {
   ///
   /// Ignored when [CountryPhonePickerThemeData.sheetSearchDecoration] is set on the effective theme.
   final CountryPickerSearchDecoration? searchFieldDecoration;
+
+  /// Whether to clear [controller]'s text when the user selects a different
+  /// country. Has no effect when the user re-selects the current country.
+  /// Defaults to `true`.
+  final bool clearTextOnCountryChange;
 
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
@@ -169,7 +175,11 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     if (!mounted) return;
     final country = await _presentCountryPicker();
     if (country != null && mounted) {
+      final countryChanged = country.isoCode != _selectedCountry.isoCode;
       setState(() => _selectedCountry = country);
+      if (countryChanged && widget.clearTextOnCountryChange) {
+        widget.controller.clear();
+      }
       widget.onCountryChanged(country);
     }
   }
