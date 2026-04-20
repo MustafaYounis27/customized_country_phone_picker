@@ -2,6 +2,10 @@
 
 Customizable Flutter phone input with a country list in a **bottom sheet** or **dialog**, bilingual names (English & Arabic), validation, dial-code display modes, and **themed picker search** (prefix/suffix widgets and clear control).
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MustafaYounis27/customized_country_phone_picker/main/example/images/hero_light.png" alt="Signup form using CountryPhoneInput" width="320"/>
+</p>
+
 ## Features
 
 - Country picker as modal **bottom sheet** or **dialog** (`CountryPickerPresentation`)
@@ -38,6 +42,8 @@ CountryPhoneInput(
 
 ## Dial Code Display Modes
 
+<img src="https://raw.githubusercontent.com/MustafaYounis27/customized_country_phone_picker/main/example/images/dial_modes_light.png" alt="Dial code display variants: in field, in box, hidden" width="320"/>
+
 ```dart
 // Default: dial code as prefix in the text field
 CountryPhoneInput(
@@ -63,6 +69,8 @@ CountryPhoneInput(
 
 ## Country Box Presets
 
+<img src="https://raw.githubusercontent.com/MustafaYounis27/customized_country_phone_picker/main/example/images/country_box_presets_light.png" alt="Country box presets: pill, outlined, flat" width="320"/>
+
 ```dart
 CountryPhoneInput(controller: ctrl, countryBoxDecoration: const CountryBoxDecoration.pill(), onCountryChanged: (c) {})
 CountryPhoneInput(controller: ctrl, countryBoxDecoration: const CountryBoxDecoration.outlined(), onCountryChanged: (c) {})
@@ -79,6 +87,8 @@ CountryPhoneInput(controller: ctrl, phoneFieldDecoration: const PhoneFieldDecora
 
 ## Picker presentation (sheet vs dialog)
 
+<img src="https://raw.githubusercontent.com/MustafaYounis27/customized_country_phone_picker/main/example/images/picker_presentation_dialog_light.png" alt="Country picker rendered as a dialog" width="320"/>
+
 ```dart
 CountryPhoneInput(
   controller: ctrl,
@@ -88,6 +98,8 @@ CountryPhoneInput(
 ```
 
 ## Search field theming
+
+<img src="https://raw.githubusercontent.com/MustafaYounis27/customized_country_phone_picker/main/example/images/themed_search_open_dark.png" alt="Themed search field with custom prefix and border" width="320"/>
 
 Use `CountryPhonePickerThemeData.searchFieldDecoration`, or pass `searchFieldDecoration` on `CountryPhoneInput` to override for that field only. For a full `InputDecoration`, set `sheetSearchDecoration` on the theme (it replaces the built-in search layout).
 
