@@ -1,3 +1,9 @@
+## 0.3.3
+
+- Rebuilt the `example/` app into a six-screen demo (hero signup, dial code modes, country box presets, phone field presets, picker presentation, themed search) with a brand-matched light/dark theme and an AppBar toggle.
+- Added screenshots under `example/images/` and embedded them in the README next to the matching feature sections.
+- No package API changes.
+
 ## 0.3.2
 
 - Updated `LICENSE` copyright to Mustafa Younis.

@@ -24,7 +24,7 @@ Customizable Flutter phone input with a country list in a **bottom sheet** or **
 
 ```yaml
 dependencies:
-  customized_country_phone_picker: ^0.3.2
+  customized_country_phone_picker: ^0.3.3
 ```
 
 ## Quick Start
