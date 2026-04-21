@@ -1,3 +1,8 @@
+## 0.4.1
+
+- Added `screenshots` in `pubspec.yaml` so pub.dev shows carousel and right-rail previews.
+- README: pub.dev / GitHub status badges (version, points, popularity, license, stars).
+
 ## 0.4.0
 
 - **Breaking:** `CountryPhoneInput` now clears the phone number text when the user picks a different country. Opt out with `clearTextOnCountryChange: false` to keep the previous behavior. Re-selecting the same country is a no-op.

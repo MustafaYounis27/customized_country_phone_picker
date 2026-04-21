@@ -1,7 +1,7 @@
 name: customized_country_phone_picker
 description: Customizable Flutter phone input country picker (sheet/dialog), EN
   & AR names, validation, dial modes, themed search.
-version: 0.4.0
+version: 0.4.1
 homepage: https://github.com/MustafaYounis27/customized_country_phone_picker
 repository: https://github.com/MustafaYounis27/customized_country_phone_picker
 issue_tracker: https://github.com/MustafaYounis27/customized_country_phone_picker/issues
@@ -11,6 +11,13 @@ topics:
   - country-phone-picker
   - input
   - widget
+
+# Shown on pub.dev (carousel + right-rail preview). Paths are relative to package root.
+screenshots:
+  - description: 'Country phone input with searchable country picker (sheet/dialog)'
+    path: example/images/hero_light.png
+  - description: 'Themed picker search and country list'
+    path: example/images/themed_search_open_dark.png
 
 environment:
   sdk: ^3.7.0
