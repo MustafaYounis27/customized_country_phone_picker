@@ -125,10 +125,7 @@ class CountryPickerSearchDecoration {
 
     final effectiveBorder = borderColor ?? colorScheme.outline;
     final effectiveFocusBorder = focusedBorderColor ?? colorScheme.primary;
-    final borderSide = BorderSide(
-      color: hasFocus ? effectiveFocusBorder : effectiveBorder,
-      width: borderWidth,
-    );
+    final borderSide = BorderSide(color: hasFocus ? effectiveFocusBorder : effectiveBorder, width: borderWidth);
     final shape = OutlineInputBorder(borderRadius: BorderRadius.circular(borderRadius), borderSide: borderSide);
 
     return InputDecoration(

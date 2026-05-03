@@ -23,6 +23,27 @@ class CountriesData {
     return null;
   }
 
+  /// Countries in [countries] whose calling code is the **longest** prefix of [allDigits]
+  /// (digits only, no `+`). Used for paste-to-detect. Empty if no prefix matches.
+  static List<CountryModel> countriesMatchingLeadingDigits(String allDigits, List<CountryModel> countries) {
+    if (allDigits.isEmpty) return [];
+    var bestLen = 0;
+    final matches = <CountryModel>[];
+    for (final c in countries) {
+      final prefix = c.dialCode.replaceFirst('+', '');
+      if (prefix.isEmpty || !allDigits.startsWith(prefix)) continue;
+      if (prefix.length > bestLen) {
+        bestLen = prefix.length;
+        matches
+          ..clear()
+          ..add(c);
+      } else if (prefix.length == bestLen) {
+        matches.add(c);
+      }
+    }
+    return matches;
+  }
+
   /// Returns the list of priority countries defined by [priorityCountryCodes].
   static List<CountryModel> get priorityCountries {
     return priorityCountryCodes.map((code) => findByIsoCode(code)).whereType<CountryModel>().toList();

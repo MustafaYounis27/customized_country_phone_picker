@@ -8,8 +8,7 @@ class HeroSignupScreen extends StatefulWidget {
   State<HeroSignupScreen> createState() => _HeroSignupScreenState();
 }
 
-class _HeroSignupScreenState extends State<HeroSignupScreen>
-    with AutomaticKeepAliveClientMixin {
+class _HeroSignupScreenState extends State<HeroSignupScreen> with AutomaticKeepAliveClientMixin {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -61,49 +60,27 @@ class _HeroSignupScreenState extends State<HeroSignupScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Create your account',
-                    style: textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
+                  Text('Create your account', style: textTheme.titleLarge, textAlign: TextAlign.center),
                   const SizedBox(height: 8),
                   Text(
                     "We'll send a verification code to your phone.",
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    'Phone number',
-                    style: textTheme.titleSmall,
-                  ),
+                  Text('Phone number', style: textTheme.titleSmall),
                   const SizedBox(height: 8),
-                  CountryPhoneInput(
-                    controller: _controller,
-                    onCountryChanged: (_) {},
-                  ),
+                  CountryPhoneInput(controller: _controller, onCountryChanged: (_) {}),
                   const SizedBox(height: 16),
                   Text(
                     'By continuing you agree to our Terms & Privacy.',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                    style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: canContinue ? () {} : null,
-                    child: const Text('Continue'),
-                  ),
+                  FilledButton(onPressed: canContinue ? () {} : null, child: const Text('Continue')),
                   const SizedBox(height: 8),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text('Already have an account? Sign in'),
-                    ),
-                  ),
+                  Center(child: TextButton(onPressed: () {}, child: const Text('Already have an account? Sign in'))),
                 ],
               ),
             ),

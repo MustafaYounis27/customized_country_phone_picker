@@ -9,8 +9,10 @@ import '../theme/country_picker_search_decoration.dart';
 import '../theme/country_picker_presentation.dart';
 import '../theme/dial_code_display.dart';
 import '../theme/phone_field_decoration.dart';
+import '../validation/phone_validation.dart';
 import 'country_picker_bottom_sheet.dart';
 import 'country_picker_dialog.dart';
+import 'international_paste_formatter.dart';
 
 /// A phone number input field with an integrated country picker.
 ///
@@ -47,6 +49,11 @@ class CountryPhoneInput extends StatefulWidget {
     this.countryPickerPresentation = CountryPickerPresentation.bottomSheet,
     this.searchFieldDecoration,
     this.clearTextOnCountryChange = true,
+    this.autovalidateMode = AutovalidateMode.disabled,
+    this.useStrictPhoneValidation = false,
+    this.validationMessageBuilder,
+    this.detectCountryOnPaste = true,
+    this.pasteAmbiguityPolicy = PasteAmbiguityPolicy.preferCurrentCountry,
   });
 
   /// Controller for the phone number text field.
@@ -59,7 +66,7 @@ class CountryPhoneInput extends StatefulWidget {
   /// Defaults to "EG" (Egypt).
   final String initialCountry;
 
-  /// Error text displayed below the input. Pass `null` to hide.
+  /// Error text displayed below the input. Overrides internal validation text.
   final String? errorText;
 
   /// Locale used for country names — "en" for English, "ar" for Arabic.
@@ -108,6 +115,24 @@ class CountryPhoneInput extends StatefulWidget {
   /// Defaults to `true`.
   final bool clearTextOnCountryChange;
 
+  /// When not [AutovalidateMode.disabled], validates the national number and
+  /// shows an error below the field (unless [errorText] is set).
+  final AutovalidateMode autovalidateMode;
+
+  /// When `true`, after length validation passes, uses [phone_numbers_parser]
+  /// rules for the selected country.
+  final bool useStrictPhoneValidation;
+
+  /// Builds the error line for a [PhoneValidationIssue]. Use with [AppLocalizations].
+  final String Function(BuildContext context, PhoneValidationIssue issue, PhoneValidationContext ctx)?
+      validationMessageBuilder;
+
+  /// When `true`, pasting values such as `+20…` or `00…` sets the country and strips the prefix.
+  final bool detectCountryOnPaste;
+
+  /// How to choose a country when several share the same dial prefix (e.g. +1).
+  final PasteAmbiguityPolicy pasteAmbiguityPolicy;
+
   @override
   State<CountryPhoneInput> createState() => _CountryPhoneInputState();
 }
@@ -116,6 +141,11 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
   late CountryModel _selectedCountry;
   late final FocusNode _focusNode;
   late final bool _ownsFocusNode;
+
+  String? _internalValidationMessage;
+  bool _userInteracted = false;
+
+  String? get _effectiveErrorText => widget.errorText ?? _internalValidationMessage;
 
   @override
   void initState() {
@@ -128,12 +158,109 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       _focusNode = FocusNode();
       _ownsFocusNode = true;
     }
+    widget.controller.addListener(_onControllerChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (widget.autovalidateMode == AutovalidateMode.always) {
+        _runValidation();
+      }
+    });
   }
 
   @override
   void dispose() {
+    widget.controller.removeListener(_onControllerChanged);
     if (_ownsFocusNode) _focusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CountryPhoneInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_onControllerChanged);
+      widget.controller.addListener(_onControllerChanged);
+    }
+    if (oldWidget.autovalidateMode != widget.autovalidateMode ||
+        oldWidget.useStrictPhoneValidation != widget.useStrictPhoneValidation ||
+        oldWidget.errorText != widget.errorText) {
+      _maybeRevalidate();
+    }
+  }
+
+  void _onControllerChanged() {
+    _maybeRevalidate();
+  }
+
+  void _maybeRevalidate() {
+    if (widget.autovalidateMode == AutovalidateMode.disabled) {
+      if (_internalValidationMessage != null) {
+        setState(() => _internalValidationMessage = null);
+      }
+      return;
+    }
+    if (widget.autovalidateMode == AutovalidateMode.onUserInteraction && !_userInteracted) {
+      return;
+    }
+    _runValidation();
+  }
+
+  void _runValidation() {
+    if (!mounted) return;
+    if (widget.autovalidateMode == AutovalidateMode.disabled) {
+      setState(() => _internalValidationMessage = null);
+      return;
+    }
+    if (widget.autovalidateMode == AutovalidateMode.onUserInteraction && !_userInteracted) {
+      setState(() => _internalValidationMessage = null);
+      return;
+    }
+
+    final text = widget.controller.text;
+    final issue = PhoneValidation.validateNationalNumber(
+      country: _selectedCountry,
+      nationalDigits: text,
+      strict: widget.useStrictPhoneValidation,
+    );
+    final msg = issue == null
+        ? null
+        : PhoneValidation.messageFor(
+            issue,
+            PhoneValidationContext(country: _selectedCountry, nationalDigits: text),
+            builder: widget.validationMessageBuilder,
+            context: context,
+          );
+    setState(() => _internalValidationMessage = msg);
+  }
+
+  void _applyPastedCountry(CountryModel country) {
+    if (!mounted) return;
+    _userInteracted = true;
+    final changed = country.isoCode != _selectedCountry.isoCode;
+    if (changed) {
+      setState(() => _selectedCountry = country);
+      widget.onCountryChanged(country);
+    }
+    _maybeRevalidate();
+  }
+
+  void _handlePhoneChanged(String value) {
+    _userInteracted = true;
+    widget.onChanged?.call(value);
+    _maybeRevalidate();
+  }
+
+  List<TextInputFormatter> _phoneInputFormatters() {
+    return [
+      InternationalPasteFormatter(
+        countries: widget.countries ?? CountriesData.all,
+        priorityIsoCodes: widget.priorityCountryCodes ?? CountriesData.priorityCountryCodes,
+        currentCountry: () => _selectedCountry,
+        policy: widget.pasteAmbiguityPolicy,
+        onCountryResolved: _applyPastedCountry,
+        enabled: widget.enabled && widget.detectCountryOnPaste,
+      ),
+    ];
   }
 
   DialCodeDisplay get _dialCodeDisplay => widget.dialCodeDisplay ?? widget.theme?.dialCodeDisplay ?? DialCodeDisplay.inField;
@@ -175,12 +302,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     if (!mounted) return;
     final country = await _presentCountryPicker();
     if (country != null && mounted) {
+      _userInteracted = true;
       final countryChanged = country.isoCode != _selectedCountry.isoCode;
       setState(() => _selectedCountry = country);
       if (countryChanged && widget.clearTextOnCountryChange) {
         widget.controller.clear();
       }
       widget.onCountryChanged(country);
+      _maybeRevalidate();
     }
   }
 
@@ -203,10 +332,10 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
             ],
           ),
         ),
-        if (widget.errorText != null) ...[
+        if (_effectiveErrorText != null) ...[
           const SizedBox(height: 4),
           Text(
-            widget.errorText!,
+            _effectiveErrorText!,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.error) ?? TextStyle(fontSize: 12, color: colorScheme.error),
           ),
         ],
@@ -254,6 +383,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
 
   Widget _buildPhoneField(ColorScheme colorScheme, TextTheme textTheme) {
     final deco = _fieldDeco;
+    final hasError = _effectiveErrorText != null;
 
     if (deco.inputDecorationOverride != null) {
       return TextField(
@@ -262,8 +392,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
         keyboardType: TextInputType.phone,
         enabled: widget.enabled,
         maxLength: _selectedCountry.maxLength,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        onChanged: widget.onChanged,
+        inputFormatters: _phoneInputFormatters(),
+        onChanged: _handlePhoneChanged,
         cursorColor: deco.cursorColor ?? colorScheme.primary,
         cursorWidth: deco.cursorWidth,
         style: deco.textStyle ?? textTheme.bodyLarge,
@@ -278,7 +408,6 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     final textStyle = deco.textStyle ?? textTheme.bodyLarge ?? const TextStyle(fontSize: 16);
     final hintStyle = deco.hintStyle ?? textStyle.copyWith(color: colorScheme.onSurfaceVariant);
     final prefixStyle = deco.prefixStyle ?? textStyle.copyWith(color: colorScheme.onSurfaceVariant);
-    final hasError = widget.errorText != null;
 
     return ListenableBuilder(
       listenable: _focusNode,
@@ -308,8 +437,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
                   keyboardType: TextInputType.phone,
                   enabled: widget.enabled,
                   maxLength: _selectedCountry.maxLength,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  onChanged: widget.onChanged,
+                  inputFormatters: _phoneInputFormatters(),
+                  onChanged: _handlePhoneChanged,
                   cursorColor: deco.cursorColor ?? colorScheme.primary,
                   cursorWidth: deco.cursorWidth,
                   style: textStyle,

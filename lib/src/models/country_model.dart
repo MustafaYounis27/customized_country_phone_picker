@@ -1,3 +1,5 @@
+import '../validation/phone_validation.dart';
+
 /// Represents a country with its phone-related metadata.
 ///
 /// Each country has bilingual names (English and Arabic), an ISO 3166-1 alpha-2
@@ -44,15 +46,24 @@ class CountryModel {
   /// Returns [nameAr] when [locale] starts with "ar", otherwise [nameEn].
   String getName(String locale) => locale.startsWith('ar') ? nameAr : nameEn;
 
+  /// Length-only validation result for national [digits] (no dial prefix).
+  ///
+  /// See [PhoneValidation.validateNationalNumber] for strict (pattern) checks.
+  PhoneValidationIssue? validateNationalDigitsIssue(String digits) =>
+      PhoneValidation.validateLengthOnly(this, digits);
+
   /// Validates a phone [number] against this country's length constraints.
   ///
   /// Returns an error message string if validation fails, or `null` if valid.
+  /// Messages are English; use [validateNationalDigitsIssue] with
+  /// [defaultPhoneValidationMessage] or [PhoneValidation.messageFor] to localize.
   String? validatePhoneNumber(String number) {
-    if (number.isEmpty) return 'Phone number is required';
-    if (number.length < minLength || number.length > maxLength) {
-      return 'Phone number must be between $minLength and $maxLength digits';
-    }
-    return null;
+    final issue = validateNationalDigitsIssue(number);
+    if (issue == null) return null;
+    return defaultPhoneValidationMessage(
+      issue,
+      PhoneValidationContext(country: this, nationalDigits: number),
+    );
   }
 
   /// Returns the full international phone number by prepending [dialCode]

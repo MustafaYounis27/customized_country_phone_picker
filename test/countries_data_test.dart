@@ -30,7 +30,10 @@ void main() {
       expect(eg, isNotNull);
       expect(eg!.isoCode, 'EG');
     });
-    test('findByDialCode returns null for unknown', () => expect(CountriesData.findByDialCode('+99999'), isNull));
+    test('countriesMatchingLeadingDigits picks Egypt for 20…', () {
+      final m = CountriesData.countriesMatchingLeadingDigits('201234567890', CountriesData.all);
+      expect(m.map((e) => e.isoCode).toList(), ['EG']);
+    });
     test('defaultCountry is Egypt', () => expect(CountriesData.defaultCountry.isoCode, 'EG'));
     test('priorityCountries contains all priority codes', () {
       final isoCodes = CountriesData.priorityCountries.map((c) => c.isoCode).toSet();

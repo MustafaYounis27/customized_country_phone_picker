@@ -17,14 +17,16 @@ Customizable Flutter phone input with a country list in a **bottom sheet** or **
 - Full theme customization via `CountryPhonePickerThemeData` (includes `copyWith`)
 - Theme-aware defaults (reads from your app's Material `ThemeData`)
 - 80+ countries with emoji flags and bilingual names
-- Phone number length validation per country
-- Zero external dependencies (Flutter SDK only)
+- Phone number length validation per country; optional **strict** pattern validation (`useStrictPhoneValidation`, powered by [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser))
+- **Paste-to-detect** for international numbers (`+…` / `00…`, and long digit pastes with multi-digit country codes)
+- **Autovalidate** with localizable messages (`autovalidateMode`, `validationMessageBuilder`, `PhoneValidationIssue`)
+- Dependency: [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) (Flutter SDK + this package)
 
 ## Installation
 
 ```yaml
 dependencies:
-  customized_country_phone_picker: ^0.4.1
+  customized_country_phone_picker: ^0.5.0
 ```
 
 ## Quick Start
@@ -131,6 +133,26 @@ CountryPhoneInput(
     sheetSearchHint: 'Find a country...',
     tileSelectedColor: Colors.red.withValues(alpha: 0.1),
   ),
+)
+```
+
+## Paste-to-detect, autovalidate, and strict validation
+
+Paste values such as `+20 100 123 4567` or `00201001234567` into the phone field to set Egypt and keep only the national digits (`detectCountryOnPaste`, default on). For shared prefixes such as `+1`, use `pasteAmbiguityPolicy` (`preferCurrentCountry`, `preferPriorityList`, or `firstAlphabeticalByIso`). Digit-only pastes that are only a single-digit calling code (e.g. US/CA) are **not** auto-detected unless the pasted text includes `+` or `00`.
+
+Use `autovalidateMode` with an optional `validationMessageBuilder` to localize errors with your `AppLocalizations`. Enable `useStrictPhoneValidation` for [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) pattern checks after length validation.
+
+```dart
+CountryPhoneInput(
+  controller: ctrl,
+  onCountryChanged: (c) {},
+  autovalidateMode: AutovalidateMode.onUserInteraction,
+  useStrictPhoneValidation: true,
+  pasteAmbiguityPolicy: PasteAmbiguityPolicy.preferCurrentCountry,
+  validationMessageBuilder: (context, issue, validationCtx) {
+    // return AppLocalizations.of(context)!.phoneError(issue.name);
+    return defaultPhoneValidationMessage(issue, validationCtx);
+  },
 )
 ```
 

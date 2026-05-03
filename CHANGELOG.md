@@ -1,3 +1,11 @@
+## 0.5.0
+
+- **Paste-to-detect:** pasting `+…`, `00…`, or a long digit string starting with a country calling code updates the selected country and strips the prefix in the field (`detectCountryOnPaste`, `pasteAmbiguityPolicy`).
+- **Localized validation:** `PhoneValidationIssue`, `PhoneValidationContext`, `defaultPhoneValidationMessage`, and `CountryPhoneInput.validationMessageBuilder` / `autovalidateMode` for in-field errors; `CountryModel.validateNationalDigitsIssue` for structured length checks.
+- **Strict validation:** `useStrictPhoneValidation` uses [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) (`PhoneValidationIssue.invalidNationalNumber`); new dependency `phone_numbers_parser`.
+- `CountriesData.countriesMatchingLeadingDigits` for longest-prefix dial code matching.
+- **Exports:** `phone_validation.dart`, `strict_phone_validator.dart`, `international_paste_formatter.dart` (`InternationalPasteFormatter`, `PasteAmbiguityPolicy`).
+
 ## 0.4.1
 
 - Added `screenshots` in `pubspec.yaml` so pub.dev shows carousel and right-rail previews.

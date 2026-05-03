@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:customized_country_phone_picker/src/models/country_model.dart';
+import 'package:customized_country_phone_picker/customized_country_phone_picker.dart';
 
 void main() {
   const egypt = CountryModel(
@@ -11,7 +11,11 @@ void main() {
     test('getName returns English for en locale', () => expect(egypt.getName('en'), 'Egypt'));
     test('getName returns Arabic for ar locale', () => expect(egypt.getName('ar'), 'مصر'));
     test('getName returns English for unknown locale', () => expect(egypt.getName('fr'), 'Egypt'));
-    test('validatePhoneNumber returns null for valid length', () => expect(egypt.validatePhoneNumber('1001234567'), isNull));
+    test('validateNationalDigitsIssue returns length issue', () {
+      expect(egypt.validateNationalDigitsIssue(''), PhoneValidationIssue.empty);
+      expect(egypt.validateNationalDigitsIssue('123'), PhoneValidationIssue.lengthOutOfRange);
+      expect(egypt.validateNationalDigitsIssue('1001234567'), isNull);
+    });
     test('validatePhoneNumber returns error for empty', () => expect(egypt.validatePhoneNumber(''), isNotNull));
     test('validatePhoneNumber returns error for too short', () => expect(egypt.validatePhoneNumber('123'), isNotNull));
     test('validatePhoneNumber returns error for too long', () => expect(egypt.validatePhoneNumber('12345678901'), isNotNull));
