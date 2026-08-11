@@ -1,3 +1,12 @@
+## 0.6.0
+
+- **Inline country prefix:** `CountryPhoneInputLayout.inlinePrefix` embeds the country selector inside the phone field as a tappable prefix (e.g. `EG (+20) ▾`). Set via `CountryPhoneInput.layout` or `CountryPhonePickerThemeData.layout`.
+- **Country identifier display:** `CountryIdentifierDisplay` (`flag` or `isoCode`) to show a flag emoji or ISO code (e.g. `EG`) in the country selector. Configurable globally in theme or per widget (`countryIdentifierDisplay`).
+- **Paste truncation:** when pasted digits exceed the country's `maxLength`, the field keeps the **trailing** digits and drops leading ones (via `InternationalPasteFormatter.truncateToMaxLength`).
+- **Custom hint:** optional `PhoneFieldDecoration.hintText` overrides the default example-number placeholder.
+- **Exports:** `country_phone_input_layout.dart`, `country_identifier_display.dart`.
+- Example app: new **Inline** demo tab; hero signup screen uses inline prefix layout.
+
 ## 0.5.0
 
 - **Paste-to-detect:** pasting `+…`, `00…`, or a long digit string starting with a country calling code updates the selected country and strips the prefix in the field (`detectCountryOnPaste`, `pasteAmbiguityPolicy`).

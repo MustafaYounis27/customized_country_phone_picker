@@ -1,6 +1,7 @@
 /// Customizable Flutter phone input with country picker (bottom sheet or dialog),
 /// bilingual names (English & Arabic), validation (length + optional strict patterns),
-/// paste-to-detect for international numbers, dial-code display modes,
+/// paste-to-detect for international numbers (with smart max-length truncation),
+/// dial-code display modes, inline country prefix layout, flag/ISO identifier display,
 /// and themed picker search via [CountryPickerSearchDecoration].
 ///
 /// ## Quick Start
