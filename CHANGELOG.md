@@ -1,3 +1,7 @@
+## 0.6.1
+
+- **Fix max-length typing:** when typing digit-by-digit, input stops at the country's `maxLength` instead of truncating leading digits. Truncation from the start applies **only on paste** (multi-character insert or bulk change).
+
 ## 0.6.0
 
 - **Inline country prefix:** `CountryPhoneInputLayout.inlinePrefix` embeds the country selector inside the phone field as a tappable prefix (e.g. `EG (+20) ▾`). Set via `CountryPhoneInput.layout` or `CountryPhonePickerThemeData.layout`.

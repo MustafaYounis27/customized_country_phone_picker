@@ -24,7 +24,7 @@ Customizable Flutter phone input with a country list in a **bottom sheet** or **
 - 80+ countries with emoji flags and bilingual names
 - Phone number length validation per country; optional **strict** pattern validation (`useStrictPhoneValidation`, powered by [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser))
 - **Paste-to-detect** for international numbers (`+…` / `00…`, and long digit pastes with multi-digit country codes)
-- **Smart paste truncation** — when pasted digits exceed `maxLength`, keeps the trailing digits (drops from the start)
+- **Per-country max length** — typing stops at `maxLength`; pasted digits that exceed the limit keep the trailing digits (drops from the start)
 - **Autovalidate** with localizable messages (`autovalidateMode`, `validationMessageBuilder`, `PhoneValidationIssue`)
 - Dependency: [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) (Flutter SDK + this package)
 
@@ -32,7 +32,7 @@ Customizable Flutter phone input with a country list in a **bottom sheet** or **
 
 ```yaml
 dependencies:
-  customized_country_phone_picker: ^0.6.0
+  customized_country_phone_picker: ^0.6.1
 ```
 
 ## Quick Start
@@ -178,7 +178,7 @@ CountryPhoneInput(
 
 Paste values such as `+20 100 123 4567` or `00201001234567` into the phone field to set Egypt and keep only the national digits (`detectCountryOnPaste`, default on). For shared prefixes such as `+1`, use `pasteAmbiguityPolicy` (`preferCurrentCountry`, `preferPriorityList`, or `firstAlphabeticalByIso`). Digit-only pastes that are only a single-digit calling code (e.g. US/CA) are **not** auto-detected unless the pasted text includes `+` or `00`.
 
-When pasted digits exceed the country's `maxLength`, the field keeps the **last** `maxLength` digits (leading digits are dropped). This applies to both international and plain digit pastes.
+When pasted digits exceed the country's `maxLength`, the field keeps the **last** `maxLength` digits (leading digits are dropped). This applies to both international and plain digit pastes. When **typing** digit-by-digit, input is blocked once `maxLength` is reached — leading digits are never removed by keystrokes.
 
 Use `autovalidateMode` with an optional `validationMessageBuilder` to localize errors with your `AppLocalizations`. Enable `useStrictPhoneValidation` for [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) pattern checks after length validation.
 

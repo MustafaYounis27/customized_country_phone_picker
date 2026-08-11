@@ -2,7 +2,7 @@ name: customized_country_phone_picker
 description: Flutter phone input with country picker (sheet/dialog), EN/AR names,
   inline country prefix, paste-to-detect with smart truncation, optional strict
   validation, themed search.
-version: 0.6.0
+version: 0.6.1
 homepage: https://github.com/MustafaYounis27/customized_country_phone_picker
 repository: https://github.com/MustafaYounis27/customized_country_phone_picker
 issue_tracker: https://github.com/MustafaYounis27/customized_country_phone_picker/issues
