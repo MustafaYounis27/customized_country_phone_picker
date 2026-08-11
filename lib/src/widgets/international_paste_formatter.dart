@@ -56,6 +56,7 @@ class InternationalPasteFormatter extends TextInputFormatter {
     required this.countries,
     required this.priorityIsoCodes,
     required this.currentCountry,
+    required this.maxLength,
     required this.policy,
     required this.onCountryResolved,
     this.enabled = true,
@@ -70,6 +71,9 @@ class InternationalPasteFormatter extends TextInputFormatter {
   /// Currently selected country (read when formatting runs).
   final CountryModel Function() currentCountry;
 
+  /// Maximum national digit count for the current country.
+  final int Function() maxLength;
+
   /// How to break ties when several countries share the same dial prefix.
   final PasteAmbiguityPolicy policy;
 
@@ -81,6 +85,21 @@ class InternationalPasteFormatter extends TextInputFormatter {
 
   static bool _isBulkChange(TextEditingValue oldValue, TextEditingValue newValue) {
     return (newValue.text.length - oldValue.text.length).abs() >= 5;
+  }
+
+  /// Keeps the last [maxLength] digits when input exceeds the limit (drops leading digits).
+  static String truncateToMaxLength(String digits, int maxLength) {
+    if (digits.length <= maxLength) return digits;
+    return digits.substring(digits.length - maxLength);
+  }
+
+  static TextEditingValue _withTruncatedDigits(TextEditingValue value, int maxLength) {
+    final truncated = truncateToMaxLength(value.text, maxLength);
+    if (truncated == value.text) return value;
+    return TextEditingValue(
+      text: truncated,
+      selection: TextSelection.collapsed(offset: truncated.length),
+    );
   }
 
   static String _digitizeInternational(String raw) {
@@ -145,7 +164,8 @@ class InternationalPasteFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     if (!enabled) {
-      return FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
+      final digitsOnly = FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
+      return _withTruncatedDigits(digitsOnly, maxLength());
     }
 
     final digitizedProbe = _digitizeInternational(newValue.text);
@@ -162,13 +182,17 @@ class InternationalPasteFormatter extends TextInputFormatter {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           onCountryResolved(c);
         });
-        return TextEditingValue(
-          text: parsed.national,
-          selection: TextSelection.collapsed(offset: parsed.national.length),
+        return _withTruncatedDigits(
+          TextEditingValue(
+            text: parsed.national,
+            selection: TextSelection.collapsed(offset: parsed.national.length),
+          ),
+          maxLength(),
         );
       }
     }
 
-    return FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
+    final digitsOnly = FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
+    return _withTruncatedDigits(digitsOnly, maxLength());
   }
 }

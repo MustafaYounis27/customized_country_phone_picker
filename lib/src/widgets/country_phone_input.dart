@@ -256,6 +256,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
         countries: widget.countries ?? CountriesData.all,
         priorityIsoCodes: widget.priorityCountryCodes ?? CountriesData.priorityCountryCodes,
         currentCountry: () => _selectedCountry,
+        maxLength: () => _selectedCountry.maxLength,
         policy: widget.pasteAmbiguityPolicy,
         onCountryResolved: _applyPastedCountry,
         enabled: widget.enabled && widget.detectCountryOnPaste,

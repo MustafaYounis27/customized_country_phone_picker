@@ -32,15 +32,20 @@ void main() {
   });
 
   group('InternationalPasteFormatter', () {
-    test('strips +20 and yields national digits', () {
-      final fmt = InternationalPasteFormatter(
+    InternationalPasteFormatter formatter({required int maxLength}) {
+      return InternationalPasteFormatter(
         countries: CountriesData.all,
         priorityIsoCodes: CountriesData.priorityCountryCodes,
         currentCountry: () => CountriesData.defaultCountry,
+        maxLength: () => maxLength,
         policy: PasteAmbiguityPolicy.preferCurrentCountry,
         onCountryResolved: (_) {},
         enabled: true,
       );
+    }
+
+    test('strips +20 and yields national digits', () {
+      final fmt = formatter(maxLength: 10);
 
       final out = fmt.formatEditUpdate(
         const TextEditingValue(text: ''),
@@ -48,6 +53,28 @@ void main() {
       );
 
       expect(out.text, '1001234567');
+    });
+
+    test('truncates pasted national digits from the start when over max length', () {
+      final fmt = formatter(maxLength: 10);
+
+      final out = fmt.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '100123456789012'),
+      );
+
+      expect(out.text, '3456789012');
+    });
+
+    test('truncates international paste from the start when national part exceeds max length', () {
+      final fmt = formatter(maxLength: 10);
+
+      final out = fmt.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '+20 100 123 4567 8901'),
+      );
+
+      expect(out.text, '2345678901');
     });
   });
 }
