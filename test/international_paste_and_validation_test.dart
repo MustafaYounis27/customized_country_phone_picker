@@ -1,4 +1,5 @@
 import 'package:customized_country_phone_picker/customized_country_phone_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -75,6 +76,29 @@ void main() {
       );
 
       expect(out.text, '2345678901');
+    });
+
+    test('blocks typing beyond max length', () {
+      final fmt = formatter(maxLength: 10);
+
+      final atMax = TextEditingValue(text: '1001234567', selection: TextSelection.collapsed(offset: 10));
+      final overflow = TextEditingValue(text: '10012345678', selection: TextSelection.collapsed(offset: 11));
+
+      final out = fmt.formatEditUpdate(atMax, overflow);
+
+      expect(out.text, '1001234567');
+    });
+
+    test('allows typing up to max length', () {
+      final fmt = formatter(maxLength: 10);
+
+      var value = const TextEditingValue(text: '');
+      for (var i = 1; i <= 10; i++) {
+        final next = TextEditingValue(text: '1' * i, selection: TextSelection.collapsed(offset: i));
+        value = fmt.formatEditUpdate(value, next);
+      }
+
+      expect(value.text, '1111111111');
     });
   });
 }

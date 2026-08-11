@@ -87,6 +87,13 @@ class InternationalPasteFormatter extends TextInputFormatter {
     return (newValue.text.length - oldValue.text.length).abs() >= 5;
   }
 
+  /// True when multiple characters are inserted in one edit (typical paste).
+  static bool _isPasteLike(TextEditingValue oldValue, TextEditingValue newValue) {
+    final lengthDelta = newValue.text.length - oldValue.text.length;
+    if (lengthDelta > 1) return true;
+    return _isBulkChange(oldValue, newValue);
+  }
+
   /// Keeps the last [maxLength] digits when input exceeds the limit (drops leading digits).
   static String truncateToMaxLength(String digits, int maxLength) {
     if (digits.length <= maxLength) return digits;
@@ -100,6 +107,18 @@ class InternationalPasteFormatter extends TextInputFormatter {
       text: truncated,
       selection: TextSelection.collapsed(offset: truncated.length),
     );
+  }
+
+  /// On paste, keeps trailing digits; on typing, rejects input beyond [maxLength].
+  static TextEditingValue _enforceMaxLength({
+    required TextEditingValue oldValue,
+    required TextEditingValue newValue,
+    required int maxLength,
+    required bool isPaste,
+  }) {
+    if (newValue.text.length <= maxLength) return newValue;
+    if (isPaste) return _withTruncatedDigits(newValue, maxLength);
+    return oldValue;
   }
 
   static String _digitizeInternational(String raw) {
@@ -163,9 +182,12 @@ class InternationalPasteFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final limit = maxLength();
+    final isPaste = _isPasteLike(oldValue, newValue);
+
     if (!enabled) {
       final digitsOnly = FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
-      return _withTruncatedDigits(digitsOnly, maxLength());
+      return _enforceMaxLength(oldValue: oldValue, newValue: digitsOnly, maxLength: limit, isPaste: isPaste);
     }
 
     final digitizedProbe = _digitizeInternational(newValue.text);
@@ -182,17 +204,19 @@ class InternationalPasteFormatter extends TextInputFormatter {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           onCountryResolved(c);
         });
-        return _withTruncatedDigits(
-          TextEditingValue(
+        return _enforceMaxLength(
+          oldValue: oldValue,
+          newValue: TextEditingValue(
             text: parsed.national,
             selection: TextSelection.collapsed(offset: parsed.national.length),
           ),
-          maxLength(),
+          maxLength: limit,
+          isPaste: true,
         );
       }
     }
 
     final digitsOnly = FilteringTextInputFormatter.digitsOnly.formatEditUpdate(oldValue, newValue);
-    return _withTruncatedDigits(digitsOnly, maxLength());
+    return _enforceMaxLength(oldValue: oldValue, newValue: digitsOnly, maxLength: limit, isPaste: isPaste);
   }
 }
