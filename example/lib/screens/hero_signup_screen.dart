@@ -70,7 +70,17 @@ class _HeroSignupScreenState extends State<HeroSignupScreen> with AutomaticKeepA
                   const SizedBox(height: 24),
                   Text('Phone number', style: textTheme.titleSmall),
                   const SizedBox(height: 8),
-                  CountryPhoneInput(controller: _controller, onCountryChanged: (_) {}),
+                  CountryPhoneInput(
+                    controller: _controller,
+                    layout: CountryPhoneInputLayout.inlinePrefix,
+                    countryIdentifierDisplay: CountryIdentifierDisplay.isoCode,
+                    countryBoxDecoration: const CountryBoxDecoration.flat(showArrow: true),
+                    phoneFieldDecoration: PhoneFieldDecoration.filled(
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      hintText: 'Enter your phone number',
+                    ),
+                    onCountryChanged: (_) {},
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'By continuing you agree to our Terms & Privacy.',

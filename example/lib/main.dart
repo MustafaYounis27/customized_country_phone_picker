@@ -7,6 +7,7 @@ import 'screens/country_box_presets_screen.dart';
 import 'screens/phone_field_presets_screen.dart';
 import 'screens/picker_presentation_screen.dart';
 import 'screens/themed_search_screen.dart';
+import 'screens/inline_prefix_screen.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -56,7 +57,7 @@ class RootScaffold extends StatefulWidget {
 class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMixin {
   late final TabController _tabController;
 
-  static const _tabs = <String>['Hero', 'Dial Modes', 'Country Box', 'Phone Field', 'Picker', 'Themed Search'];
+  static const _tabs = <String>['Hero', 'Inline', 'Dial Modes', 'Country Box', 'Phone Field', 'Picker', 'Themed Search'];
 
   @override
   void initState() {
@@ -106,6 +107,7 @@ class _RootScaffoldState extends State<RootScaffold> with TickerProviderStateMix
         controller: _tabController,
         children: const [
           HeroSignupScreen(),
+          InlinePrefixScreen(),
           DialCodeModesScreen(),
           CountryBoxPresetsScreen(),
           PhoneFieldPresetsScreen(),

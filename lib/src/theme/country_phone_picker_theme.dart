@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'country_box_decoration.dart';
+import 'country_identifier_display.dart';
+import 'country_phone_input_layout.dart';
 import 'country_picker_search_decoration.dart';
 import 'dial_code_display.dart';
 import 'phone_field_decoration.dart';
@@ -11,6 +13,8 @@ import 'phone_field_decoration.dart';
 class CountryPhonePickerThemeData {
   final CountryBoxDecoration? countryBoxDecoration;
   final DialCodeDisplay dialCodeDisplay;
+  final CountryPhoneInputLayout layout;
+  final CountryIdentifierDisplay countryIdentifierDisplay;
   final PhoneFieldDecoration? phoneFieldDecoration;
   final Color? sheetBackgroundColor;
   final double sheetTopRadius;
@@ -29,6 +33,8 @@ class CountryPhonePickerThemeData {
   const CountryPhonePickerThemeData({
     this.countryBoxDecoration,
     this.dialCodeDisplay = DialCodeDisplay.inField,
+    this.layout = CountryPhoneInputLayout.separated,
+    this.countryIdentifierDisplay = CountryIdentifierDisplay.flag,
     this.phoneFieldDecoration,
     this.sheetBackgroundColor,
     this.sheetTopRadius = 24,
@@ -48,6 +54,8 @@ class CountryPhonePickerThemeData {
   CountryPhonePickerThemeData copyWith({
     CountryBoxDecoration? countryBoxDecoration,
     DialCodeDisplay? dialCodeDisplay,
+    CountryPhoneInputLayout? layout,
+    CountryIdentifierDisplay? countryIdentifierDisplay,
     PhoneFieldDecoration? phoneFieldDecoration,
     Color? sheetBackgroundColor,
     double? sheetTopRadius,
@@ -66,6 +74,8 @@ class CountryPhonePickerThemeData {
     return CountryPhonePickerThemeData(
       countryBoxDecoration: countryBoxDecoration ?? this.countryBoxDecoration,
       dialCodeDisplay: dialCodeDisplay ?? this.dialCodeDisplay,
+      layout: layout ?? this.layout,
+      countryIdentifierDisplay: countryIdentifierDisplay ?? this.countryIdentifierDisplay,
       phoneFieldDecoration: phoneFieldDecoration ?? this.phoneFieldDecoration,
       sheetBackgroundColor: sheetBackgroundColor ?? this.sheetBackgroundColor,
       sheetTopRadius: sheetTopRadius ?? this.sheetTopRadius,

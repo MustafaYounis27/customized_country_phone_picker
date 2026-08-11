@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../data/countries_data.dart';
 import '../models/country_model.dart';
 import '../theme/country_box_decoration.dart';
+import '../theme/country_identifier_display.dart';
+import '../theme/country_phone_input_layout.dart';
 import '../theme/country_phone_picker_theme.dart';
 import '../theme/country_picker_search_decoration.dart';
 import '../theme/country_picker_presentation.dart';
@@ -41,6 +43,8 @@ class CountryPhoneInput extends StatefulWidget {
     this.enabled = true,
     this.focusNode,
     this.dialCodeDisplay,
+    this.layout,
+    this.countryIdentifierDisplay,
     this.countryBoxDecoration,
     this.phoneFieldDecoration,
     this.theme,
@@ -84,6 +88,14 @@ class CountryPhoneInput extends StatefulWidget {
   /// Controls where the dial code is displayed.
   /// Overrides [theme]'s value when provided.
   final DialCodeDisplay? dialCodeDisplay;
+
+  /// Whether the country selector sits beside the field or inside it as a prefix.
+  /// Overrides [theme]'s value when provided.
+  final CountryPhoneInputLayout? layout;
+
+  /// Whether the country selector shows a flag or ISO code (e.g. "EG").
+  /// Overrides [theme]'s value when provided.
+  final CountryIdentifierDisplay? countryIdentifierDisplay;
 
   /// Styling for the country selector box.
   /// Overrides [theme]'s value when provided.
@@ -266,6 +278,14 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
 
   DialCodeDisplay get _dialCodeDisplay => widget.dialCodeDisplay ?? widget.theme?.dialCodeDisplay ?? DialCodeDisplay.inField;
 
+  CountryPhoneInputLayout get _layout =>
+      widget.layout ?? widget.theme?.layout ?? CountryPhoneInputLayout.separated;
+
+  CountryIdentifierDisplay get _countryIdentifierDisplay =>
+      widget.countryIdentifierDisplay ?? widget.theme?.countryIdentifierDisplay ?? CountryIdentifierDisplay.flag;
+
+  bool get _isInlinePrefix => _layout == CountryPhoneInputLayout.inlinePrefix;
+
   CountryBoxDecoration get _boxDeco =>
       widget.countryBoxDecoration ?? widget.theme?.countryBoxDecoration ?? const CountryBoxDecoration.pill();
 
@@ -324,14 +344,16 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildCountryBox(colorScheme, textTheme),
-              SizedBox(width: _fieldDeco.gapWithCountryBox),
-              Expanded(child: _buildPhoneField(colorScheme, textTheme)),
-            ],
-          ),
+          child: _isInlinePrefix
+              ? _buildPhoneField(colorScheme, textTheme)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildCountryBox(colorScheme, textTheme),
+                    SizedBox(width: _fieldDeco.gapWithCountryBox),
+                    Expanded(child: _buildPhoneField(colorScheme, textTheme)),
+                  ],
+                ),
         ),
         if (_effectiveErrorText != null) ...[
           const SizedBox(height: 4),
@@ -341,6 +363,51 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildCountryIdentifier(ColorScheme colorScheme, TextTheme textTheme, CountryBoxDecoration deco) {
+    if (!_shouldShowCountryIdentifier(deco)) return const SizedBox.shrink();
+
+    if (_countryIdentifierDisplay == CountryIdentifierDisplay.flag) {
+      return Text(_selectedCountry.flag, style: TextStyle(fontSize: deco.flagSize));
+    }
+
+    final labelStyle =
+        deco.dialCodeStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface) ?? const TextStyle(fontSize: 14);
+    return Text(_selectedCountry.isoCode, style: labelStyle);
+  }
+
+  bool _shouldShowCountryIdentifier(CountryBoxDecoration deco) {
+    if (_countryIdentifierDisplay == CountryIdentifierDisplay.isoCode) return true;
+    return deco.showFlag;
+  }
+
+  Widget _buildInlineCountryPrefix(ColorScheme colorScheme, TextTheme textTheme) {
+    final boxDeco = _boxDeco;
+    final fieldDeco = _fieldDeco;
+    final arrowColor = boxDeco.arrowColor ?? colorScheme.onSurfaceVariant;
+    final labelStyle =
+        fieldDeco.prefixStyle ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant) ?? const TextStyle(fontSize: 14);
+
+    return GestureDetector(
+      onTap: widget.enabled ? _openPicker : null,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_shouldShowCountryIdentifier(boxDeco)) ...[
+            _buildCountryIdentifier(colorScheme, textTheme, boxDeco),
+            SizedBox(width: boxDeco.spacing),
+          ],
+          Text('(${_selectedCountry.dialCode})', style: labelStyle),
+          if (boxDeco.showArrow) ...[
+            SizedBox(width: boxDeco.spacing),
+            Icon(boxDeco.arrowIcon, size: boxDeco.arrowSize, color: arrowColor),
+          ],
+          SizedBox(width: fieldDeco.prefixSpacing),
+        ],
+      ),
     );
   }
 
@@ -365,7 +432,10 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (deco.showFlag) ...[Text(_selectedCountry.flag, style: TextStyle(fontSize: deco.flagSize)), SizedBox(width: deco.spacing)],
+              if (_shouldShowCountryIdentifier(deco)) ...[
+                _buildCountryIdentifier(colorScheme, textTheme, deco),
+                SizedBox(width: deco.spacing),
+              ],
               if (_dialCodeDisplay == DialCodeDisplay.inBox) ...[
                 Text(
                   _selectedCountry.dialCode,
@@ -387,7 +457,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
     final hasError = _effectiveErrorText != null;
 
     if (deco.inputDecorationOverride != null) {
-      return TextField(
+      final field = TextField(
         controller: widget.controller,
         focusNode: _focusNode,
         keyboardType: TextInputType.phone,
@@ -400,6 +470,17 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
         style: deco.textStyle ?? textTheme.bodyLarge,
         decoration: deco.inputDecorationOverride!,
       );
+
+      if (_isInlinePrefix) {
+        return Row(
+          children: [
+            _buildInlineCountryPrefix(colorScheme, textTheme),
+            Expanded(child: field),
+          ],
+        );
+      }
+
+      return field;
     }
 
     final borderColor = deco.borderColor ?? colorScheme.outline;
@@ -427,7 +508,8 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
           padding: deco.contentPadding,
           child: Row(
             children: [
-              if (_dialCodeDisplay == DialCodeDisplay.inField) ...[
+              if (_isInlinePrefix) _buildInlineCountryPrefix(colorScheme, textTheme),
+              if (!_isInlinePrefix && _dialCodeDisplay == DialCodeDisplay.inField) ...[
                 Text(_selectedCountry.dialCode, style: prefixStyle),
                 SizedBox(width: deco.prefixSpacing),
               ],
@@ -446,7 +528,7 @@ class _CountryPhoneInputState extends State<CountryPhoneInput> {
                   decoration: InputDecoration(
                     isDense: true,
                     counterText: '',
-                    hintText: _selectedCountry.exampleNumber ?? '',
+                    hintText: deco.hintText ?? _selectedCountry.exampleNumber ?? '',
                     hintStyle: hintStyle,
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,

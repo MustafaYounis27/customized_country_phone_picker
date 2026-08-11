@@ -11,6 +11,7 @@ class PhoneFieldDecoration {
   final Color? focusBackgroundColor;
   final TextStyle? textStyle;
   final TextStyle? hintStyle;
+  final String? hintText;
   final TextStyle? prefixStyle;
   final EdgeInsetsGeometry contentPadding;
   final double prefixSpacing;
@@ -29,6 +30,7 @@ class PhoneFieldDecoration {
     this.focusBackgroundColor,
     this.textStyle,
     this.hintStyle,
+    this.hintText,
     this.prefixStyle,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.prefixSpacing = 8,
@@ -48,6 +50,7 @@ class PhoneFieldDecoration {
     this.backgroundColor,
     this.textStyle,
     this.hintStyle,
+    this.hintText,
     this.prefixStyle,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.prefixSpacing = 8,
@@ -65,6 +68,7 @@ class PhoneFieldDecoration {
     this.borderRadius = 12,
     this.textStyle,
     this.hintStyle,
+    this.hintText,
     this.prefixStyle,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.prefixSpacing = 8,
@@ -84,6 +88,7 @@ class PhoneFieldDecoration {
     this.borderWidth = 1,
     this.textStyle,
     this.hintStyle,
+    this.hintText,
     this.prefixStyle,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.prefixSpacing = 8,

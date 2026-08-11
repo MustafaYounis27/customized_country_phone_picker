@@ -20,6 +20,8 @@ library;
 export 'src/models/country_model.dart';
 export 'src/data/countries_data.dart';
 export 'src/theme/dial_code_display.dart';
+export 'src/theme/country_phone_input_layout.dart';
+export 'src/theme/country_identifier_display.dart';
 export 'src/theme/country_box_decoration.dart';
 export 'src/theme/phone_field_decoration.dart';
 export 'src/theme/country_phone_picker_theme.dart';
